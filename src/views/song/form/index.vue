@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ReCol from "@/components/ReCol";
 import { formRules } from "../utils/rule";
 import { FormProps } from "../utils/types";
+import { getAllArtists } from "@/api/system";
 
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
@@ -36,8 +37,25 @@ const styleOptions = [
   "乡村",
   "古典"
 ];
+
+const artistOptions = ref([]);
 const ruleFormRef = ref();
 const newFormInline = ref(props.formInline);
+
+// 加载歌手列表
+onMounted(async () => {
+  try {
+    const result = await getAllArtists();
+    if (result.code === 0 && Array.isArray(result.data)) {
+      artistOptions.value = result.data.map(item => ({
+        label: item.artistName,
+        value: item.artistId
+      }));
+    }
+  } catch (error) {
+    console.error("加载歌手列表失败:", error);
+  }
+});
 
 function getRef() {
   return ruleFormRef.value;
@@ -55,29 +73,22 @@ defineExpose({ getRef });
   >
     <el-row :gutter="30">
       <re-col :value="12" :xs="24" :sm="24">
-        <el-form-item label="歌手编号" prop="artistId">
-          <el-input
+        <el-form-item label="选择歌手" prop="artistId" required>
+          <el-select
             v-model="newFormInline.artistId"
+            placeholder="请选择歌手"
+            class="w-full"
             clearable
-            disabled
-            placeholder="newFormInline.artistId"
-          />
-        </el-form-item>
-      </re-col>
-
-      <re-col
-        v-if="newFormInline.title === '修改'"
-        :value="12"
-        :xs="24"
-        :sm="24"
-      >
-        <el-form-item label="歌手" prop="artistName">
-          <el-input
-            v-model="newFormInline.artistName"
-            clearable
-            disabled
-            placeholder="newFormInline.artistName"
-          />
+            filterable
+            :disabled="newFormInline.title === '修改'"
+          >
+            <el-option
+              v-for="artist in artistOptions"
+              :key="artist.value"
+              :label="artist.label"
+              :value="artist.value"
+            />
+          </el-select>
         </el-form-item>
       </re-col>
 
@@ -125,6 +136,7 @@ defineExpose({ getRef });
             placeholder="请选择发行日期"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
+            class="w-full"
           />
         </el-form-item>
       </re-col>

@@ -65,7 +65,8 @@ export function usePlaylist(tableRef: Ref) {
     {
       label: "歌单",
       prop: "title",
-      minWidth: 300
+      minWidth: 300,
+      showOverflowTooltip: false
     },
     {
       label: "风格",
@@ -94,7 +95,6 @@ export function usePlaylist(tableRef: Ref) {
     },
     {
       label: "操作",
-      fixed: "right",
       width: 180,
       slot: "operation"
     }

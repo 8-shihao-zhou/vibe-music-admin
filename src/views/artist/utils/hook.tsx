@@ -68,7 +68,8 @@ export function useArtist(tableRef: Ref) {
       label: "歌手",
       prop: "artistName",
       minWidth: 130,
-      width: 200
+      width: 200,
+      showOverflowTooltip: false
     },
     {
       label: "类型",
@@ -130,7 +131,6 @@ export function useArtist(tableRef: Ref) {
     },
     {
       label: "操作",
-      fixed: "right",
       width: 180,
       slot: "operation"
     }

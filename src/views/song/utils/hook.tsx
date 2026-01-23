@@ -28,12 +28,10 @@ import {
   onMounted
 } from "vue";
 
-export function useSong(tableRef: Ref, treeRef: Ref) {
+export function useSong(tableRef: Ref) {
   const form = reactive({
     pageNum: 1,
     pageSize: 10,
-    // 左侧歌手树的id
-    artistId: null,
     songName: null,
     album: null
   });
@@ -42,8 +40,6 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
   const loading = ref(true);
   // 上传封面信息
   const coverInfo = ref();
-  const treeData = ref([]);
-  const treeLoading = ref(true);
   const selectedNum = ref(0);
   const pagination = reactive<PaginationProps>({
     total: 0,
@@ -80,18 +76,21 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
     {
       label: "歌名",
       prop: "songName",
-      minWidth: 130
+      minWidth: 130,
+      showOverflowTooltip: false
     },
     {
       label: "歌手",
       prop: "artistName",
-      minWidth: 160
+      minWidth: 160,
+      showOverflowTooltip: false
     },
     {
       label: "专辑",
       prop: "album",
       minWidth: 160,
-      width: 200
+      width: 200,
+      showOverflowTooltip: false
     },
     {
       label: "曲风",
@@ -199,36 +198,6 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
       });
   }
 
-  /** 获取所有歌手 */
-  async function fetchArtists() {
-    try {
-      const result = await getAllArtists();
-
-      if (result.code === 0 && Array.isArray(result.data)) {
-        // 转换成树形结构
-        treeData.value = result.data.map(item => ({
-          label: item.artistName, // 歌手名称
-          value: item.artistId, // 唯一标识符
-          children: [] // 默认没有子节点，后续可以根据需要添加
-        }));
-
-        // 默认选中第一个歌手
-        // if (result.data.length > 0) {
-        //   form.artistId = result.data[0].artistId;
-        // }
-
-        // 默认返回所有数据
-        onSearch();
-      } else {
-        console.error("API 返回异常:", result);
-        message("获取歌手列表失败", { type: "error" });
-      }
-    } catch (error) {
-      console.error("请求失败：", error);
-      message("会话过期，请重新登录", { type: "error" });
-    }
-  }
-
   async function onSearch() {
     try {
       const result = await getSongList(toRaw(form)); // 获取完整的返回数据
@@ -238,6 +207,7 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
         pagination.total = result.data.total; // 设置总条目数
         dataList.value = result.data.items.map(item => ({
           songId: item.songId,
+          artistId: item.artistId, // 添加 artistId
           songName: item.songName,
           artistName: item.artistName,
           album: item.album,
@@ -276,16 +246,8 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
     if (!formEl) return;
     formEl.resetFields();
     form.artistId = "";
-    treeRef.value.onTreeReset();
     onSearch();
   };
-
-  function onTreeSelect({ artistId, selected }) {
-    form.artistId = selected ? artistId : "";
-    pagination.currentPage = 1; // 重置页码
-    form.pageNum = 1; // 重置页码参数
-    onSearch();
-  }
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
@@ -293,7 +255,7 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
       props: {
         formInline: {
           title,
-          artistId: form.artistId ?? 0,
+          artistId: row?.artistId ?? null,
           artistName: row?.artistName ?? "",
           songId: row?.songId ?? 0,
           songName: row?.songName ?? "",
@@ -318,21 +280,33 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
         }
-        FormRef.validate(valid => {
+        FormRef.validate(async valid => {
           if (valid) {
             console.log("curData", curData);
+
+            // 检查 artistId 是否有效
+            if (!curData.artistId || curData.artistId === 0) {
+              message("请选择歌手", { type: "error" });
+              return;
+            }
+
             // 表单规则校验通过
             if (title === "新增") {
               curData.style = Array.isArray(curData.style)
                 ? curData.style.join(",")
                 : "";
-              addSong(curData).then(res => {
+
+              try {
+                const res = await addSong(curData);
                 if (res.code === 0) {
                   chores();
                 } else {
                   message("新增歌曲失败，" + res.message, { type: "error" });
                 }
-              });
+              } catch (error) {
+                console.error("添加歌曲失败:", error);
+                message("添加歌曲失败，请检查网络连接", { type: "error" });
+              }
             } else {
               curData.style = Array.isArray(curData.style)
                 ? curData.style.join(",")
@@ -397,12 +371,7 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
   }
 
   onMounted(async () => {
-    treeLoading.value = true;
-    await fetchArtists(); // 先获取歌手列表
-    if (form.artistId) {
-      await onSearch(); // 获取歌曲列表
-    }
-    treeLoading.value = false;
+    await onSearch(); // 获取歌曲列表
   });
 
   return {
@@ -410,8 +379,6 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
     loading,
     columns,
     dataList,
-    treeData,
-    treeLoading,
     selectedNum,
     pagination,
     buttonClass,
@@ -420,7 +387,6 @@ export function useSong(tableRef: Ref, treeRef: Ref) {
     resetForm,
     onbatchDel,
     openDialog,
-    onTreeSelect,
     handleUpdate,
     handleDelete,
     handleUpload,
