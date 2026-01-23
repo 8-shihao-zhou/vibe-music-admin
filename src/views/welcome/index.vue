@@ -353,6 +353,18 @@ const pieChartData2 = ref([
 <style lang="scss" scoped>
 :deep(.el-card) {
   --el-card-border-color: none;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.15);
+  }
 
   /* 解决概率进度条宽度 */
   .el-progress--line {
@@ -375,11 +387,85 @@ const pieChartData2 = ref([
   }
 }
 
+.line-card {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .text-md {
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #303133 0%, #606266 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .w-8.h-8 {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+  }
+}
+
+.bar-card {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .text-md {
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #303133 0%, #606266 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
 .main-content {
   margin: 20px 20px 0 !important;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+    border-radius: 24px;
+    z-index: -1;
+  }
 }
 
 .bar-position {
   margin-top: 18px;
+}
+
+:deep(.el-row) {
+  .el-col {
+    transition: all 0.3s ease;
+  }
 }
 </style>

@@ -28,19 +28,74 @@
 /* nprogress 适配 element-plus 的主题色 */
 #nprogress {
   & .bar {
-    background-color: var(--el-color-primary) !important;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
   }
 
   & .peg {
     box-shadow:
-      0 0 10px var(--el-color-primary),
-      0 0 5px var(--el-color-primary) !important;
+      0 0 10px #667eea,
+      0 0 5px #764ba2 !important;
   }
 
   & .spinner-icon {
-    border-top-color: var(--el-color-primary);
-    border-left-color: var(--el-color-primary);
+    border-top-color: #667eea;
+    border-left-color: #764ba2;
   }
+}
+
+/* 全局按钮样式优化 */
+.el-button {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.el-button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* 卡片样式优化 */
+.el-card {
+  border-radius: 16px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+/* 输入框样式优化 */
+.el-input__wrapper {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.el-input__wrapper:hover {
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* 表格样式优化 */
+.el-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  font-weight: 600;
+}
+
+.el-table tr:hover > td {
+  background: rgba(102, 126, 234, 0.05) !important;
 }
 
 .pure-dialog {
@@ -64,12 +119,30 @@
   }
 }
 
+/* 对话框样式优化 */
+.el-dialog {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.el-dialog__header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+}
+
+.el-dialog__title {
+  color: white;
+  font-weight: 600;
+}
+
 /* 全局覆盖element-plus的el-tour、el-dialog、el-drawer、el-message-box、el-notification组件右上角关闭图标和el-upload上传文件列表右侧关闭图标的样式，表现更鲜明 */
 .el-dialog__headerbtn,
 .el-message-box__headerbtn {
   &:hover {
     .el-dialog__close {
-      color: var(--el-color-info) !important;
+      color: white !important;
     }
   }
 }
@@ -83,7 +156,7 @@
   .el-upload-list__item.is-ready &.el-icon--close {
     width: 24px;
     height: 24px;
-    border-radius: 4px;
+    border-radius: 8px;
     outline: none;
     transition:
       background-color 0.2s,
@@ -105,6 +178,7 @@
 .pure-message {
   background: #fff !important;
   border-width: 0 !important;
+  border-radius: 12px !important;
   box-shadow:
     0 3px 6px -4px #0000001f,
     0 6px 16px #00000014,
@@ -117,7 +191,7 @@
   }
 
   & .el-message__closeBtn {
-    border-radius: 4px;
+    border-radius: 8px;
     outline: none;
     transition:
       background-color 0.2s,
@@ -163,7 +237,7 @@
 
 /* 仿 el-scrollbar 滚动条样式，支持大多数浏览器，如Chrome、Edge、Firefox、Safari等。整体暗色风格在 src/style/dark.scss 文件进行了适配 */
 .pure-scrollbar {
-  scrollbar-color: rgb(221 222 224) transparent; /* 滑块颜色、轨道颜色 */
+  scrollbar-color: rgb(102 126 234 / 50%) transparent; /* 滑块颜色、轨道颜色 */
 
   /* Firefox */
   scrollbar-width: thin; /* 可选值为 'auto', 'thin', 'none' */
@@ -178,12 +252,12 @@
 
   /* 滚动条滑块 */
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(221 222 224);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 4px;
   }
 
   /* 滚动条滑块：hover状态 */
   ::-webkit-scrollbar-thumb:hover {
-    background: rgb(199 201 203); /* 滑块hover颜色 */
+    background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%); /* 滑块hover颜色 */
   }
 }

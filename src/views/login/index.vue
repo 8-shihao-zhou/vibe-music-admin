@@ -174,4 +174,41 @@ onBeforeUnmount(() => {
 :deep(.el-input-group__append, .el-input-group__prepend) {
   padding: 0;
 }
+
+:deep(.el-input__wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+:deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+}
+
+:deep(.el-button--primary) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+:deep(.el-button--primary:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+:deep(.el-button--primary:active) {
+  transform: translateY(0);
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 24px;
+}
 </style>
