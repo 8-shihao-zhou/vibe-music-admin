@@ -21,19 +21,26 @@ const pagination = reactive({
 const loadHistory = async () => {
   try {
     loading.value = true;
-    const response = await http.request("get", "/notification/admin/history", {
+    console.log("开始加载通知历史...");
+    
+    const response: any = await http.request("get", "/notification/admin/history", {
       params: {
         pageNum: pagination.pageNum,
         pageSize: pagination.pageSize
       }
     });
 
+    console.log("API响应:", response);
+    console.log("响应码:", response.code);
+    console.log("响应数据:", response.data);
+
     // 后端返回的code: 0表示成功，1表示失败
     if (response.code === 0) {
-      dataList.value = response.data.records;
-      pagination.total = response.data.total;
+      dataList.value = response.data.records || [];
+      pagination.total = response.data.total || 0;
+      console.log("通知历史加载成功，总数:", pagination.total);
     } else {
-      message(response.message || response.msg || "加载失败", { type: "error" });
+      message(response.message || "加载失败", { type: "error" });
     }
   } catch (error) {
     console.error("加载通知历史失败:", error);
@@ -84,13 +91,16 @@ const handleBatchDelete = async () => {
     );
 
     loading.value = true;
+    console.log("开始批量删除通知，数量:", selectedRows.value.length);
     
     // 逐个删除选中的通知
-    const deletePromises = selectedRows.value.map((row: any) =>
-      http.request("delete", `/notification/admin/delete/${row.id}`)
-    );
+    const deletePromises = selectedRows.value.map((row: any) => {
+      console.log("删除通知 ID:", row.id);
+      return http.request("delete", `/notification/admin/delete/${row.id}`);
+    });
 
     const results = await Promise.all(deletePromises);
+    console.log("删除结果:", results);
     
     // 检查是否全部删除成功
     const allSuccess = results.every((res: any) => res.code === 0);
@@ -128,10 +138,14 @@ const handleDelete = async (row: any) => {
     );
 
     loading.value = true;
-    const response = await http.request(
+    console.log("删除通知 ID:", row.id);
+    
+    const response: any = await http.request(
       "delete",
       `/notification/admin/delete/${row.id}`
     );
+
+    console.log("删除响应:", response);
 
     if (response.code === 0) {
       message("删除成功", { type: "success" });
