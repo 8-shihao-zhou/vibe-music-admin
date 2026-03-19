@@ -471,3 +471,28 @@ export const deleteSongRequests = (ids: number[]) => {
     data: ids
   });
 };
+
+/** 歌单管理-获取歌单内歌曲 */
+export const getPlaylistSongs = (playlistId: number) => {
+  const userData = getToken();
+  return http.request<Result>("get", `/admin/playlist/${playlistId}/songs`, {
+    headers: { Authorization: userData.accessToken }
+  });
+};
+
+/** 歌单管理-添加歌曲到歌单 */
+export const addSongToPlaylist = (playlistId: number, songId: number) => {
+  const userData = getToken();
+  return http.request<Result>("post", `/admin/playlist/${playlistId}/songs`, {
+    headers: { Authorization: userData.accessToken },
+    params: { songId }
+  });
+};
+
+/** 歌单管理-从歌单移除歌曲 */
+export const removeSongFromPlaylist = (playlistId: number, songId: number) => {
+  const userData = getToken();
+  return http.request<Result>("delete", `/admin/playlist/${playlistId}/songs/${songId}`, {
+    headers: { Authorization: userData.accessToken }
+  });
+};

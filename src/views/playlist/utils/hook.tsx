@@ -1,5 +1,6 @@
 import "./reset.css";
 import editForm from "../form/index.vue";
+import songsForm from "../form/songs.vue";
 import { message } from "@/utils/message";
 import playlistCover from "@/assets/song.jpg";
 import { addDialog } from "@/components/ReDialog";
@@ -13,7 +14,11 @@ import {
   updatePlaylist,
   updatePlaylistCover,
   deletePlaylist,
-  deletePlaylists
+  deletePlaylists,
+  getPlaylistSongs,
+  addSongToPlaylist,
+  removeSongFromPlaylist,
+  getSongList
 } from "@/api/system";
 import { type Ref, h, ref, toRaw, computed, reactive, onMounted } from "vue";
 
@@ -269,6 +274,32 @@ export function usePlaylist(tableRef: Ref) {
   }
 
   const cropRef = ref();
+
+  /** 管理歌单内歌曲 */
+  function handleManageSongs(row) {
+    addDialog({
+      title: `管理歌曲 - ${row.title}`,
+      width: "760px",
+      draggable: true,
+      fullscreen: deviceDetection(),
+      closeOnClickModal: false,
+      contentRenderer: () =>
+        h(songsForm, {
+          playlistId: row.playlistId,
+          playlistTitle: row.title
+        }),
+      footerButtons: [
+        {
+          label: "关闭",
+          text: true,
+          btnClick: ({ dialog: { options, index } }) => {
+            options.visible = false;
+          }
+        }
+      ]
+    });
+  }
+
   /** 上传歌单封面 */
   async function handleUpload(row) {
     addDialog({
@@ -333,6 +364,7 @@ export function usePlaylist(tableRef: Ref) {
     handleUpdate,
     handleDelete,
     handleUpload,
+    handleManageSongs,
     handleSizeChange,
     onSelectionCancel,
     handleCurrentChange,

@@ -34,6 +34,7 @@ const {
   handleUpdate,
   handleDelete,
   handleUpload,
+  handleManageSongs,
   handleSizeChange,
   onSelectionCancel,
   handleCurrentChange,
@@ -198,6 +199,17 @@ const {
                         @click="handleUpload(row)"
                       >
                         上传头像
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button
+                        :class="buttonClass"
+                        link
+                        type="primary"
+                        :size="size"
+                        @click="handleManageSongs(row)"
+                      >
+                        管理歌曲
                       </el-button>
                     </el-dropdown-item>
                   </el-dropdown-menu>

@@ -1,6 +1,7 @@
 import "./reset.css";
 import dayjs from "dayjs";
 import editForm from "../form/index.vue";
+import songsForm from "../form/songs.vue";
 import { message } from "@/utils/message";
 import userAvatar from "@/assets/user.jpg";
 import { addDialog } from "@/components/ReDialog";
@@ -309,6 +310,31 @@ export function useArtist(tableRef: Ref) {
   }
 
   const cropRef = ref();
+  /** 管理歌手歌曲 */
+  function handleManageSongs(row) {
+    addDialog({
+      title: `管理歌曲 - ${row.artistName}`,
+      width: "760px",
+      draggable: true,
+      fullscreen: deviceDetection(),
+      closeOnClickModal: false,
+      contentRenderer: () =>
+        h(songsForm, {
+          artistId: row.artistId,
+          artistName: row.artistName
+        }),
+      footerButtons: [
+        {
+          label: "关闭",
+          text: true,
+          btnClick: ({ dialog: { options } }) => {
+            options.visible = false;
+          }
+        }
+      ]
+    });
+  }
+
   /** 上传头像 */
   async function handleUpload(row) {
     addDialog({
@@ -373,6 +399,7 @@ export function useArtist(tableRef: Ref) {
     handleUpdate,
     handleDelete,
     handleUpload,
+    handleManageSongs,
     handleSizeChange,
     onSelectionCancel,
     handleCurrentChange,

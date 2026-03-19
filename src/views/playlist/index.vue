@@ -34,6 +34,7 @@ const {
   handleUpdate,
   handleDelete,
   handleUpload,
+  handleManageSongs,
   handleSizeChange,
   onSelectionCancel,
   handleCurrentChange,
@@ -166,6 +167,15 @@ const {
                 @click="openDialog('修改', row)"
               >
                 修改
+              </el-button>
+              <el-button
+                class="reset-margin"
+                link
+                type="primary"
+                :size="size"
+                @click="handleManageSongs(row)"
+              >
+                管理歌曲
               </el-button>
               <el-popconfirm
                 :title="`是否确认删除歌单编号为 ${row.playlistId} 的这条数据`"
