@@ -421,3 +421,53 @@ export const deleteBanners = (ids: Array<number>) => {
     data: ids
   });
 };
+
+/** 歌曲收录请求-获取列表 */
+export const getSongRequestList = (params: {
+  status?: number | string | null;
+  keyword?: string;
+  pageNum?: number;
+  pageSize?: number;
+}) => {
+  const userData = getToken();
+  const query = new URLSearchParams();
+  if (params.status !== null && params.status !== undefined && params.status !== "") query.append("status", String(params.status));
+  if (params.keyword) query.append("keyword", params.keyword);
+  query.append("pageNum", String(params.pageNum ?? 1));
+  query.append("pageSize", String(params.pageSize ?? 10));
+  return http.request<Result>("get", `/song-request/admin/list?${query.toString()}`, {
+    headers: { Authorization: userData.accessToken }
+  });
+};
+
+/** 歌曲收录请求-通过 */
+export const approveSongRequest = (id: number) => {
+  const userData = getToken();
+  return http.request<Result>("put", `/song-request/admin/approve/${id}`, {
+    headers: { Authorization: userData.accessToken }
+  });
+};
+
+/** 歌曲收录请求-拒绝 */
+export const rejectSongRequest = (id: number, reason: string) => {
+  const userData = getToken();
+  return http.request<Result>("put", `/song-request/admin/reject/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: userData.accessToken
+    },
+    data: { reason }
+  });
+};
+
+/** 歌曲收录请求-批量删除 */
+export const deleteSongRequests = (ids: number[]) => {
+  const userData = getToken();
+  return http.request<Result>("delete", "/song-request/admin/delete", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: userData.accessToken
+    },
+    data: ids
+  });
+};
