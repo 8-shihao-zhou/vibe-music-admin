@@ -9,11 +9,8 @@ import { usePermissionStoreHook } from "@/store/modules/permission";
 import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import LaySidebarLogo from "../lay-sidebar/components/SidebarLogo.vue";
 import LaySidebarItem from "../lay-sidebar/components/SidebarItem.vue";
-import LaySidebarLeftCollapse from "../lay-sidebar/components/SidebarLeftCollapse.vue";
-import LaySidebarCenterCollapse from "../lay-sidebar/components/SidebarCenterCollapse.vue";
 
 const route = useRoute();
-const isShow = ref(false);
 const showLogo = ref(
   storageLocal().getItem<StorageConfigs>(
     `${responsiveStorageNameSpace()}configure`
@@ -23,10 +20,8 @@ const showLogo = ref(
 const {
   device,
   pureApp,
-  isCollapse,
   tooltipEffect,
-  menuSelect,
-  toggleSideBar
+  menuSelect
 } = useNav();
 
 const subMenuData = ref([]);
@@ -90,10 +85,8 @@ onBeforeUnmount(() => {
   <div
     v-loading="loading"
     :class="['sidebar-container', showLogo ? 'has-logo' : 'no-logo']"
-    @mouseenter.prevent="isShow = true"
-    @mouseleave.prevent="isShow = false"
   >
-    <LaySidebarLogo v-if="showLogo" :collapse="isCollapse" />
+    <LaySidebarLogo v-if="showLogo" :collapse="false" />
     <el-scrollbar
       wrap-class="scrollbar-wrapper"
       :class="[device === 'mobile' ? 'mobile' : 'pc']"
@@ -103,7 +96,7 @@ onBeforeUnmount(() => {
         mode="vertical"
         popper-class="pure-scrollbar"
         class="outer-most select-none"
-        :collapse="isCollapse"
+        :collapse="false"
         :collapse-transition="false"
         :popper-effect="tooltipEffect"
         :default-active="defaultActive"
@@ -117,16 +110,6 @@ onBeforeUnmount(() => {
         />
       </el-menu>
     </el-scrollbar>
-    <LaySidebarCenterCollapse
-      v-if="device !== 'mobile' && (isShow || isCollapse)"
-      :is-active="pureApp.sidebar.opened"
-      @toggleClick="toggleSideBar"
-    />
-    <LaySidebarLeftCollapse
-      v-if="device !== 'mobile'"
-      :is-active="pureApp.sidebar.opened"
-      @toggleClick="toggleSideBar"
-    />
   </div>
 </template>
 

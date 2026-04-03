@@ -62,29 +62,34 @@ const loadUsers = async () => {
   try {
     loading.value = true;
     console.log("开始加载用户列表...");
-    
+
     const response = await http.request("get", "/notification/admin/users");
-    
+
     console.log("API响应:", response);
     console.log("响应码:", response.code);
     console.log("响应数据:", response.data);
-    
+
     // 后端返回的code: 0表示成功，1表示失败
     if (response.code === 0) {
       // 只显示启用状态的用户
       const allUsers = response.data || [];
-      userList.value = allUsers.filter(user => user.userStatus === '启用');
-      
-      console.log("用户列表加载成功，总数:", allUsers.length, "启用:", userList.value.length);
-      
+      userList.value = allUsers.filter(user => user.userStatus === "启用");
+
+      console.log(
+        "用户列表加载成功，总数:",
+        allUsers.length,
+        "启用:",
+        userList.value.length
+      );
+
       if (userList.value.length === 0) {
         if (allUsers.length > 0) {
-          message("提示：所有用户都已被禁用，无法发送通知", { 
+          message("提示：所有用户都已被禁用，无法发送通知", {
             type: "warning",
             duration: 5000
           });
         } else {
-          message("提示：当前系统中没有用户数据，请先在用户管理模块添加用户", { 
+          message("提示：当前系统中没有用户数据，请先在用户管理模块添加用户", {
             type: "warning",
             duration: 5000
           });
@@ -92,11 +97,13 @@ const loadUsers = async () => {
       }
     } else {
       console.error("加载失败，错误信息:", response.message || response.msg);
-      message(response.message || response.msg || "加载用户列表失败", { type: "error" });
+      message(response.message || response.msg || "加载用户列表失败", {
+        type: "error"
+      });
     }
   } catch (error: any) {
     console.error("加载用户列表异常:", error);
-    
+
     // 更详细的错误提示
     let errorMsg = "加载用户列表失败";
     if (error.response) {
@@ -117,7 +124,7 @@ const loadUsers = async () => {
       // 其他错误
       errorMsg = error.message || "加载用户列表失败";
     }
-    
+
     message(errorMsg, { type: "error", duration: 5000 });
   } finally {
     loading.value = false;
@@ -167,7 +174,9 @@ const sendNotification = async () => {
           // 清空表格选择
           tableRef.value?.clearSelection();
         } else {
-          message(response.message || response.msg || "通知发送失败", { type: "error" });
+          message(response.message || response.msg || "通知发送失败", {
+            type: "error"
+          });
         }
       } catch (error) {
         console.error("发送通知失败:", error);
@@ -235,9 +244,7 @@ onMounted(() => {
           <el-table-column prop="createTime" label="注册时间" width="180" />
           <el-table-column prop="userStatus" label="状态" width="100">
             <template #default="{ row }">
-              <el-tag
-                :type="row.userStatus === '启用' ? 'success' : 'danger'"
-              >
+              <el-tag :type="row.userStatus === '启用' ? 'success' : 'danger'">
                 {{ row.userStatus }}
               </el-tag>
             </template>

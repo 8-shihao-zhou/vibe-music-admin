@@ -54,17 +54,19 @@ const toggleClick = () => {
 .center-collapse {
   position: absolute;
   top: 50%;
-  right: 2px;
+  right: 4px;
   z-index: 1002;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 34px;
+  width: 30px;
+  height: 38px;
   cursor: pointer;
-  background: var(--el-bg-color);
-  border: 1px solid var(--pure-border-color);
-  border-radius: 4px;
-  transform: translate(12px, -50%);
+  color: #45627e;
+  background: linear-gradient(180deg, rgb(255 255 255 / 94%), rgb(242 247 251 / 94%));
+  border: 1px solid rgb(91 141 239 / 14%);
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgb(71 85 105 / 12%);
+  transform: translate(14px, -50%);
 }
 </style>

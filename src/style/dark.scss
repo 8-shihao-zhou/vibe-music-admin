@@ -1,40 +1,99 @@
 @use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;
 
-/* 整体暗色风格适配 */
 html.dark {
-  $border-style: #303030;
-  $color-white: #fff;
+  $border-style: rgb(116 157 214 / 14%);
+  $panel-bg: rgb(15 24 36 / 92%);
+  $panel-soft: rgb(20 31 46 / 88%);
+  $text-main: rgb(235 242 250 / 92%);
+  $text-soft: rgb(182 198 214 / 72%);
 
-  /* 自定义深色背景颜色 */
-  // --el-bg-color: #020409;
+  --pure-border-color: rgb(226 232 240 / 12%);
+  --pure-switch-off-color: #ffffff40;
 
-  /* 常用border-color 需要时可取用 */
-  --pure-border-color: rgb(253 253 253 / 12%);
+  .admin-neo {
+    --el-bg-color: #101b28;
+    --el-bg-color-page: #0d1723;
+    --el-text-color-primary: #e9f1f8;
+    --el-text-color-regular: #bfd0de;
+    --el-text-color-secondary: #8ea3b6;
+    --el-border-color-light: rgb(116 157 214 / 14%);
+    --el-border-color-lighter: rgb(116 157 214 / 10%);
+    --pure-theme-menu-bg: linear-gradient(180deg, rgb(28 41 58 / 98%), rgb(42 59 79 / 98%));
+    --pure-theme-sub-menu-bg: rgb(255 255 255 / 3%);
+    --pure-theme-menu-hover: rgb(255 255 255 / 6%);
+    --pure-theme-menu-text: rgb(232 240 248 / 82%);
+    --pure-theme-sidebar-logo: linear-gradient(180deg, rgb(28 41 58 / 98%), rgb(39 55 74 / 98%));
+    --pure-theme-sub-menu-active-text: #fff;
+    --pure-theme-menu-title-hover: #fff;
+    --pure-theme-menu-active-before: #73a5ff;
 
-  /* switch关闭状态下的color 需要时可取用 */
-  --pure-switch-off-color: #ffffff3f;
+    .main-container {
+      background:
+        radial-gradient(circle at 8% 10%, rgb(59 130 246 / 14%), transparent 28%),
+        radial-gradient(circle at 90% 12%, rgb(45 212 191 / 10%), transparent 28%),
+        linear-gradient(155deg, #0f1825 0%, #132131 48%, #111c2b 100%) !important;
+    }
+
+    .fixed-header,
+    .tags-view {
+      background: linear-gradient(90deg, rgb(17 28 42 / 92%), rgb(15 24 36 / 90%)) !important;
+      border-color: $border-style !important;
+      box-shadow: 0 10px 24px rgb(0 0 0 / 18%);
+    }
+
+    .main-content,
+    .search-form,
+    .pure-table,
+    .el-card,
+    .table-header,
+    .table-bar {
+      background: linear-gradient(180deg, rgb(18 29 43 / 88%), rgb(14 23 35 / 90%)) !important;
+      border-color: $border-style !important;
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 4%),
+        0 16px 32px rgb(0 0 0 / 18%) !important;
+      color: $text-main;
+    }
+
+    .navbar-bg-hover,
+    .set-icon,
+    .fullscreen-icon,
+    .dropdown-badge,
+    .search-container {
+      &:hover {
+        background: rgb(115 165 255 / 12%) !important;
+        box-shadow: inset 0 0 0 1px rgb(115 165 255 / 12%);
+      }
+    }
+
+    .el-table {
+      --el-table-header-bg-color: rgb(25 39 58 / 96%);
+      --el-table-row-hover-bg-color: rgb(115 165 255 / 7%);
+      --el-table-bg-color: transparent;
+      --el-table-tr-bg-color: rgb(18 29 43 / 82%);
+      --el-table-text-color: #dbe7f1;
+    }
+  }
 
   .navbar,
-  .tags-view,
   .contextmenu,
-  .sidebar-container,
   .horizontal-header,
+  .sidebar-container,
   .sidebar-logo-container,
   .horizontal-header .el-sub-menu__title,
   .horizontal-header .submenu-title-noDropdown {
-    background: var(--el-bg-color) !important;
+    background: transparent !important;
   }
 
   .app-main,
   .app-main-nofixed-header {
-    background: #020409 !important;
+    background: transparent !important;
   }
 
-  /* 标签页 */
   .tags-view {
     .arrow-left,
     .arrow-right {
-      border-right: 1px solid $border-style;
+      border-color: $border-style;
       box-shadow: none;
     }
 
@@ -45,33 +104,47 @@ html.dark {
     .scroll-item {
       .el-icon-close {
         &:hover {
-          color: rgb(255 255 255 / 85%) !important;
+          color: rgb(255 255 255 / 88%) !important;
           background-color: rgb(255 255 255 / 12%);
         }
       }
 
       .chrome-tab {
         .tag-title {
-          color: #666;
+          color: #9db3c6;
         }
 
         &:hover {
           .chrome-tab__bg {
-            color: #333;
+            color: #20324b;
           }
 
           .tag-title {
-            color: #adadad;
+            color: #edf4fb;
           }
         }
       }
     }
   }
 
-  /* 系统配置面板 */
+  .right-panel,
+  .project-configuration {
+    background: $panel-bg !important;
+  }
+
+  .right-panel {
+    box-shadow: -14px 0 30px rgb(0 0 0 / 24%) !important;
+  }
+
+  .project-configuration,
+  .right-panel .border-t-\[1px\],
+  .right-panel .border-b-\[1px\] {
+    border-color: $border-style !important;
+  }
+
   .right-panel-items {
     .el-divider__text {
-      --el-bg-color: var(--el-bg-color);
+      --el-bg-color: #101b28;
     }
 
     .el-divider--horizontal {
@@ -80,21 +153,27 @@ html.dark {
   }
 
   .el-card {
-    --el-card-bg-color: var(--el-bg-color);
+    --el-card-bg-color: transparent;
   }
 
   .el-backtop {
-    --el-backtop-bg-color: rgb(72 72 78);
+    --el-backtop-bg-color: rgb(52 64 82);
     --el-backtop-hover-bg-color: var(--el-color-primary);
+  }
 
-    transition: background-color 0.25s cubic-bezier(0.7, 0.3, 0.1, 1);
+  .el-dropdown-menu {
+    background: $panel-soft !important;
+    border-color: $border-style !important;
+  }
+
+  .el-dropdown-menu__item {
+    color: $text-main !important;
   }
 
   .el-dropdown-menu__item:not(.is-disabled):hover {
-    background: transparent;
+    background: rgb(115 165 255 / 12%) !important;
   }
 
-  /* 全局覆盖element-plus的el-dialog、el-drawer、el-message-box、el-notification组件右上角关闭图标的样式，表现更鲜明 */
   .el-dialog__headerbtn {
     top: 20px !important;
     right: 20px !important;
@@ -111,7 +190,7 @@ html.dark {
   }
 
   .el-dialog__headerbtn:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
+    background: rgb(255 255 255 / 20%) !important;
     border-radius: 8px !important;
   }
 
@@ -126,7 +205,7 @@ html.dark {
     &.el-notification__closeBtn {
       &:hover {
         color: white !important;
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        background-color: rgb(255 255 255 / 20%) !important;
 
         .pure-dialog-svg {
           color: white !important;
@@ -135,55 +214,43 @@ html.dark {
     }
   }
 
-  /* 克隆并自定义 ElMessage 样式，不会影响 ElMessage 原本样式，在 src/utils/message.ts 中调用自定义样式 ElMessage 方法即可，整体浅色风格在 src/style/element-plus.scss 文件进行了适配 */
   .pure-message {
-    background-color: rgb(36 37 37) !important;
-    background-image: initial !important;
+    background-color: rgb(23 30 39) !important;
     box-shadow:
       rgb(13 13 13 / 12%) 0 3px 6px -4px,
       rgb(13 13 13 / 8%) 0 6px 16px 0,
       rgb(13 13 13 / 5%) 0 9px 28px 8px !important;
 
     & .el-message__content {
-      color: $color-white !important;
-      pointer-events: all !important;
-      background-image: initial !important;
+      color: white !important;
     }
 
-    & .el-message__closeBtn {
-      &:hover {
-        color: rgb(255 255 255 / 85%);
-        background-color: rgb(255 255 255 / 12%);
-      }
+    & .el-message__closeBtn:hover {
+      color: rgb(255 255 255 / 85%);
+      background-color: rgb(255 255 255 / 12%);
     }
   }
 
-  /* 自定义菜单搜索样式 */
   .pure-search-dialog {
     .el-dialog__footer {
       box-shadow:
-        0 -1px 0 0 #555a64,
+        0 -1px 0 0 #334155,
         0 -3px 6px 0 rgb(69 98 155 / 12%);
     }
 
-    .search-footer {
-      .search-footer-item {
-        color: rgb(235 235 235 / 60%);
-
-        .icon {
-          box-shadow: none;
-        }
-      }
+    .search-footer .search-footer-item {
+      color: $text-soft;
     }
   }
 
-  /* ReSegmented 组件 */
   .pure-segmented {
-    color: rgb(255 255 255 / 65%);
-    background-color: #000;
+    color: rgb(255 255 255 / 68%);
+    background-color: rgb(8 15 24);
 
     .pure-segmented-item-selected {
-      background-color: #1f1f1f;
+      background-color: rgb(25 39 58);
+      color: #edf4fb;
+      box-shadow: inset 0 0 0 1px rgb(115 165 255 / 12%);
     }
 
     .pure-segmented-item-disabled {
@@ -191,16 +258,15 @@ html.dark {
     }
   }
 
-  /* 仿 el-scrollbar 滚动条样式 支持大多数浏览器，如Chrome、Edge、Firefox、Safari等 */
   .pure-scrollbar {
-    scrollbar-color: rgb(63 64 66) transparent;
+    scrollbar-color: rgb(63 78 96) transparent;
 
     ::-webkit-scrollbar-thumb {
-      background-color: rgb(63 64 66);
+      background-color: rgb(63 78 96);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: rgb(92 93 96);
+      background: rgb(92 111 133);
     }
   }
 }

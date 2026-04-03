@@ -104,11 +104,7 @@ const openPreviewDialog = row => {
         </el-form-item>
       </el-form>
 
-      <PureTableBar
-        title="歌曲管理"
-        :columns="columns"
-        @refresh="onSearch"
-      >
+      <PureTableBar title="歌曲管理" :columns="columns" @refresh="onSearch">
         <template #buttons>
           <el-button
             type="primary"

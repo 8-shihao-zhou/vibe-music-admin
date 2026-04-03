@@ -17,14 +17,12 @@ const { tooltipEffect } = useNav();
 
 const iconClass = computed(() => {
   return [
-    "ml-4",
-    "mb-1",
     "w-[16px]",
     "h-[16px]",
     "inline-block",
     "align-middle",
     "cursor-pointer",
-    "duration-[100ms]"
+    "duration-[180ms]"
   ];
 });
 
@@ -61,9 +59,13 @@ const toggleClick = () => {
 .left-collapse {
   position: absolute;
   bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 40px;
-  line-height: 40px;
-  box-shadow: 0 0 6px -3px var(--el-color-primary);
+  background: linear-gradient(180deg, rgb(255 255 255 / 2%), rgb(255 255 255 / 6%));
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
 }
 </style>

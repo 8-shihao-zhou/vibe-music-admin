@@ -17,13 +17,13 @@ const searching = ref(false);
 const loadArtistSongs = async () => {
   loadingArtist.value = true;
   try {
-    const res = await getSongList({
+    const res = (await getSongList({
       pageNum: 1,
       pageSize: 200,
       songName: "",
       artistId: props.artistId,
       album: ""
-    }) as ResultTable;
+    })) as ResultTable;
     if (res.code === 0 && res.data?.items) {
       artistSongs.value = res.data.items;
     }
@@ -36,13 +36,13 @@ const handleSearch = async () => {
   if (!searchKeyword.value.trim()) return;
   searching.value = true;
   try {
-    const res = await getSongList({
+    const res = (await getSongList({
       pageNum: 1,
       pageSize: 20,
       songName: searchKeyword.value,
       artistId: null,
       album: ""
-    }) as ResultTable;
+    })) as ResultTable;
     if (res.code === 0 && res.data?.items) {
       // 过滤掉已属于该歌手的歌曲
       searchResults.value = res.data.items;
@@ -55,7 +55,10 @@ const handleSearch = async () => {
 /** 将歌曲归属到该歌手（更新 artistId） */
 const handleAdd = async (song: any) => {
   const id = song.songId ?? song.id;
-  if (!id) { message("无法获取歌曲ID", { type: "error" }); return; }
+  if (!id) {
+    message("无法获取歌曲ID", { type: "error" });
+    return;
+  }
   const res = await updateSong({
     songId: id,
     artistId: props.artistId,
@@ -77,7 +80,10 @@ const handleAdd = async (song: any) => {
 /** 删除歌曲 */
 const handleRemove = async (song: any) => {
   const id = song.songId ?? song.id;
-  if (!id) { message("无法获取歌曲ID", { type: "error" }); return; }
+  if (!id) {
+    message("无法获取歌曲ID", { type: "error" });
+    return;
+  }
   const res = await deleteSong(id);
   if (res.code === 0) {
     message("已删除", { type: "success" });
@@ -106,8 +112,11 @@ onMounted(loadArtistSongs);
       <div class="font-semibold mb-2 text-sm">
         歌手歌曲（{{ artistSongs.length }} 首）
       </div>
-      <el-scrollbar height="360px" v-loading="loadingArtist">
-        <div v-if="artistSongs.length === 0" class="text-center text-gray-400 py-8 text-sm">
+      <el-scrollbar v-loading="loadingArtist" height="360px">
+        <div
+          v-if="artistSongs.length === 0"
+          class="text-center text-gray-400 py-8 text-sm"
+        >
           暂无歌曲，从右侧搜索添加
         </div>
         <div style="min-width: 400px">
@@ -121,11 +130,27 @@ onMounted(loadArtistSongs);
               v-if="song.coverUrl"
               :src="song.coverUrl"
               fit="cover"
-              style="width:32px;height:32px;border-radius:4px;flex-shrink:0"
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 4px;
+                flex-shrink: 0;
+              "
             />
-            <div v-else style="width:32px;height:32px;flex-shrink:0;background:#f0f0f0;border-radius:4px" />
+            <div
+              v-else
+              style="
+                width: 32px;
+                height: 32px;
+                flex-shrink: 0;
+                background: #f0f0f0;
+                border-radius: 4px;
+              "
+            />
             <div style="width: 260px; min-width: 0">
-              <div class="text-sm font-medium truncate">{{ song.songName }}</div>
+              <div class="text-sm font-medium truncate">
+                {{ song.songName }}
+              </div>
               <div class="text-xs text-gray-400 truncate">{{ song.album }}</div>
             </div>
             <el-popconfirm
@@ -140,8 +165,9 @@ onMounted(loadArtistSongs);
                   type="danger"
                   link
                   size="small"
-                  style="flex-shrink:0;margin-left:auto"
-                >删除</el-button>
+                  style="flex-shrink: 0; margin-left: auto"
+                  >删除</el-button
+                >
               </template>
             </el-popconfirm>
           </div>
@@ -166,7 +192,10 @@ onMounted(loadArtistSongs);
         </el-button>
       </div>
       <el-scrollbar height="320px">
-        <div v-if="searchResults.length === 0" class="text-center text-gray-400 py-8 text-sm">
+        <div
+          v-if="searchResults.length === 0"
+          class="text-center text-gray-400 py-8 text-sm"
+        >
           输入关键词搜索歌曲
         </div>
         <div style="min-width: 480px">
@@ -180,21 +209,40 @@ onMounted(loadArtistSongs);
               v-if="song.coverUrl"
               :src="song.coverUrl"
               fit="cover"
-              style="width:32px;height:32px;border-radius:4px;flex-shrink:0"
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 4px;
+                flex-shrink: 0;
+              "
             />
-            <div v-else style="width:32px;height:32px;flex-shrink:0;background:#f0f0f0;border-radius:4px" />
+            <div
+              v-else
+              style="
+                width: 32px;
+                height: 32px;
+                flex-shrink: 0;
+                background: #f0f0f0;
+                border-radius: 4px;
+              "
+            />
             <div style="width: 320px; min-width: 0">
-              <div class="text-sm font-medium truncate">{{ song.songName }}</div>
-              <div class="text-xs text-gray-400 truncate">{{ song.artistName }}</div>
+              <div class="text-sm font-medium truncate">
+                {{ song.songName }}
+              </div>
+              <div class="text-xs text-gray-400 truncate">
+                {{ song.artistName }}
+              </div>
             </div>
             <el-button
               type="primary"
               link
               size="small"
-              style="flex-shrink:0;margin-left:auto;min-width:48px"
+              style="flex-shrink: 0; margin-left: auto; min-width: 48px"
               :disabled="isInArtist(song)"
               @click="handleAdd(song)"
-            >{{ isInArtist(song) ? '已添加' : '添加' }}</el-button>
+              >{{ isInArtist(song) ? "已添加" : "添加" }}</el-button
+            >
           </div>
         </div>
       </el-scrollbar>

@@ -431,13 +431,22 @@ export const getSongRequestList = (params: {
 }) => {
   const userData = getToken();
   const query = new URLSearchParams();
-  if (params.status !== null && params.status !== undefined && params.status !== "") query.append("status", String(params.status));
+  if (
+    params.status !== null &&
+    params.status !== undefined &&
+    params.status !== ""
+  )
+    query.append("status", String(params.status));
   if (params.keyword) query.append("keyword", params.keyword);
   query.append("pageNum", String(params.pageNum ?? 1));
   query.append("pageSize", String(params.pageSize ?? 10));
-  return http.request<Result>("get", `/song-request/admin/list?${query.toString()}`, {
-    headers: { Authorization: userData.accessToken }
-  });
+  return http.request<Result>(
+    "get",
+    `/song-request/admin/list?${query.toString()}`,
+    {
+      headers: { Authorization: userData.accessToken }
+    }
+  );
 };
 
 /** 歌曲收录请求-通过 */
@@ -492,7 +501,11 @@ export const addSongToPlaylist = (playlistId: number, songId: number) => {
 /** 歌单管理-从歌单移除歌曲 */
 export const removeSongFromPlaylist = (playlistId: number, songId: number) => {
   const userData = getToken();
-  return http.request<Result>("delete", `/admin/playlist/${playlistId}/songs/${songId}`, {
-    headers: { Authorization: userData.accessToken }
-  });
+  return http.request<Result>(
+    "delete",
+    `/admin/playlist/${playlistId}/songs/${songId}`,
+    {
+      headers: { Authorization: userData.accessToken }
+    }
+  );
 };

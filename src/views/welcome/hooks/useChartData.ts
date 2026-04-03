@@ -4,17 +4,37 @@ import {
   getAllSongsCount,
   getAllPlaylistsCount
 } from "@/api/data";
+import { getCommunityStatistics } from "@/api/community";
+import { getReportList } from "@/api/report";
+import { getSongRequestList } from "@/api/system";
 import { onMounted, ref } from "vue";
 import { message } from "@/utils/message";
 
+const defaultCommunityStatistics = () => ({
+  totalPosts: 0,
+  publishedPosts: 0,
+  draftPosts: 0,
+  deletedPosts: 0,
+  totalComments: 0,
+  totalLikes: 0,
+  totalViews: 0
+});
+
 export default () => {
-  /** 总数 */
+  const loading = ref(false);
+
+  /** core totals */
   const userCount = ref<number>(0);
   const artistCount = ref<number>(0);
   const songCount = ref<number>(0);
   const playlistCount = ref<number>(0);
 
-  /** 歌曲类型 */
+  /** operations */
+  const pendingReportCount = ref<number>(0);
+  const pendingSongRequestCount = ref<number>(0);
+  const communityStatistics = ref(defaultCommunityStatistics());
+
+  /** song styles */
   const westernPopCount = ref<number>(0);
   const chinesePopCount = ref<number>(0);
   const cantonesePopCount = ref<number>(0);
@@ -26,7 +46,7 @@ export default () => {
   const jazzCount = ref<number>(0);
   const lightCount = ref<number>(0);
 
-  /** 歌手地区分布 */
+  /** artist regions */
   const countAmerica = ref<number>(0);
   const countChina = ref<number>(0);
   const countKorea = ref<number>(0);
@@ -34,7 +54,7 @@ export default () => {
   const countGermany = ref<number>(0);
   const countBritain = ref<number>(0);
 
-  /** 歌手性别 */
+  /** artist genders */
   const maleCount = ref<number>(0);
   const femaleCount = ref<number>(0);
 
@@ -47,131 +67,21 @@ export default () => {
     "嘻哈说唱",
     "摇滚",
     "电子",
-    "节奏布鲁斯",
+    "爵士布鲁斯",
     "轻音乐"
   ];
 
   const artistAreas = ["美国", "中国", "韩国", "日本", "德国", "英国"];
-
   const artistGenders = [0, 1];
-
-  const fetchData = async () => {
-    try {
-      // 使用 map 函数生成歌曲类型查询的 Promise 数组
-      const songTypePromises = songTypes.map(type => getAllSongsCount(type));
-      const artistAreasPromises = artistAreas.map(area =>
-        getAllArtistsCount(undefined, area)
-      );
-      const artistGendersPromises = artistGenders.map(gender =>
-        getAllArtistsCount(gender)
-      );
-
-      // 使用 Promise.all 并行执行所有 API 请求
-      const allResponses = await Promise.all([
-        getAllUsersCount(),
-        getAllArtistsCount(),
-        getAllSongsCount(),
-        getAllPlaylistsCount(),
-        ...songTypePromises,
-        ...artistAreasPromises,
-        ...artistGendersPromises
-      ]);
-
-      // 手动拆分数据
-      const userRes = allResponses[0];
-      const artistRes = allResponses[1];
-      const songRes = allResponses[2];
-      const playlistRes = allResponses[3];
-
-      // 根据 songTypes 长度，切割歌曲类型的统计数据
-      const songTypeRes = allResponses.slice(4, 4 + songTypes.length);
-
-      // 根据 artistAreas 长度，切割歌手地区统计数据
-      const artistAreaRes = allResponses.slice(
-        4 + songTypes.length,
-        4 + songTypes.length + artistAreas.length
-      );
-
-      // 获取歌手性别统计数据
-      const artistGenderRes = allResponses.slice(
-        4 + songTypes.length + artistAreas.length
-      );
-
-      // 将所有 API 响应放入一个数组
-      const responses = [
-        userRes,
-        artistRes,
-        songRes,
-        playlistRes,
-        ...songTypeRes,
-        ...artistAreaRes,
-        ...artistGenderRes
-      ];
-
-      // 将所有计数器 ref 对象放入一个数组
-      const counts = [
-        userCount,
-        artistCount,
-        songCount,
-        playlistCount,
-        westernPopCount,
-        chinesePopCount,
-        cantonesePopCount,
-        koreanPopCount,
-        classicCount,
-        hiphopCount,
-        rockCount,
-        electronicCount,
-        jazzCount,
-        lightCount,
-        countAmerica,
-        countChina,
-        countKorea,
-        countJapan,
-        countGermany,
-        countBritain,
-        maleCount,
-        femaleCount
-      ];
-
-      let allSuccess = true;
-
-      // 遍历所有 API 响应，并更新计数器
-      responses.forEach((response, index) => {
-        // 检查响应是否有效
-        if (
-          !response ||
-          response.code !== 0 ||
-          isNaN(Number(response.data)) // 确保 response.data 可以转换成数字
-        ) {
-          allSuccess = false;
-          console.error(
-            `获取第 ${index + 1} 个数据失败，返回数据错误:`,
-            response
-          );
-          return;
-        } else {
-          // 更新计数器
-          counts[index].value = Number(response.data);
-        }
-      });
-
-      // 如果所有请求都成功，则记录计数器值，否则重置计数器
-      if (!allSuccess) {
-        resetCounts();
-      }
-    } catch (error) {
-      console.error("获取数据失败:", error);
-      message("会话过期，请重新登录", { type: "error" });
-      resetCounts();
-    }
-  };
 
   const resetCounts = () => {
     userCount.value = 0;
     artistCount.value = 0;
     songCount.value = 0;
     playlistCount.value = 0;
+    pendingReportCount.value = 0;
+    pendingSongRequestCount.value = 0;
+    communityStatistics.value = defaultCommunityStatistics();
     westernPopCount.value = 0;
     chinesePopCount.value = 0;
     cantonesePopCount.value = 0;
@@ -192,20 +102,144 @@ export default () => {
     femaleCount.value = 0;
   };
 
-  // const logCounts = () => {
-  //   console.log(`用户数量: ${userCount.value}`);
-  //   console.log(`歌手数量: ${artistCount.value}`);
-  //   console.log(`歌曲数量: ${songCount.value}`);
-  //   console.log(`歌单数量: ${playlistCount.value}`);
-  // };
+  const fetchData = async () => {
+    loading.value = true;
+    try {
+      const songTypePromises = songTypes.map(type => getAllSongsCount(type));
+      const artistAreaPromises = artistAreas.map(area =>
+        getAllArtistsCount(undefined, area)
+      );
+      const artistGenderPromises = artistGenders.map(gender =>
+        getAllArtistsCount(gender)
+      );
+
+      const allResponses = await Promise.all([
+        getAllUsersCount(),
+        getAllArtistsCount(),
+        getAllSongsCount(),
+        getAllPlaylistsCount(),
+        getCommunityStatistics(),
+        getReportList({ pageNum: 1, pageSize: 1, status: 0 }),
+        getSongRequestList({ pageNum: 1, pageSize: 1, status: 0, keyword: "" }),
+        ...songTypePromises,
+        ...artistAreaPromises,
+        ...artistGenderPromises
+      ]);
+
+      const baseResponses = allResponses.slice(0, 7);
+      const songTypeResponses = allResponses.slice(7, 7 + songTypes.length);
+      const artistAreaResponses = allResponses.slice(
+        7 + songTypes.length,
+        7 + songTypes.length + artistAreas.length
+      );
+      const artistGenderResponses = allResponses.slice(
+        7 + songTypes.length + artistAreas.length
+      );
+
+      const [
+        userRes,
+        artistRes,
+        songRes,
+        playlistRes,
+        communityRes,
+        reportRes,
+        songRequestRes
+      ] = baseResponses;
+
+      const metricMappings = [
+        [userRes, userCount],
+        [artistRes, artistCount],
+        [songRes, songCount],
+        [playlistRes, playlistCount]
+      ] as const;
+
+      let allSuccess = true;
+
+      metricMappings.forEach(([response, countRef], index) => {
+        if (!response || response.code !== 0 || isNaN(Number(response.data))) {
+          allSuccess = false;
+          console.error(`Failed to load metric #${index + 1}`, response);
+          return;
+        }
+        countRef.value = Number(response.data);
+      });
+
+      if (communityRes?.code === 0 && communityRes.data) {
+        communityStatistics.value = {
+          ...defaultCommunityStatistics(),
+          ...communityRes.data
+        };
+      } else {
+        allSuccess = false;
+      }
+
+      if (reportRes?.code === 0 && reportRes.data) {
+        pendingReportCount.value = Number(reportRes.data.total || 0);
+      } else {
+        allSuccess = false;
+      }
+
+      if (songRequestRes?.code === 0 && songRequestRes.data) {
+        pendingSongRequestCount.value = Number(songRequestRes.data.total || 0);
+      } else {
+        allSuccess = false;
+      }
+
+      const chartRefs = [
+        westernPopCount,
+        chinesePopCount,
+        cantonesePopCount,
+        koreanPopCount,
+        classicCount,
+        hiphopCount,
+        rockCount,
+        electronicCount,
+        jazzCount,
+        lightCount,
+        countAmerica,
+        countChina,
+        countKorea,
+        countJapan,
+        countGermany,
+        countBritain,
+        maleCount,
+        femaleCount
+      ];
+
+      [...songTypeResponses, ...artistAreaResponses, ...artistGenderResponses].forEach(
+        (response, index) => {
+          if (!response || response.code !== 0 || isNaN(Number(response.data))) {
+            allSuccess = false;
+            console.error(`Failed to load chart metric #${index + 1}`, response);
+            return;
+          }
+          chartRefs[index].value = Number(response.data);
+        }
+      );
+
+      if (!allSuccess) {
+        message("部分首页数据加载失败，已展示当前可用内容", { type: "warning" });
+      }
+    } catch (error) {
+      console.error("Failed to load welcome dashboard data:", error);
+      message("首页数据加载失败，请稍后重试", { type: "error" });
+      resetCounts();
+    } finally {
+      loading.value = false;
+    }
+  };
 
   onMounted(fetchData);
 
   return {
+    loading,
     userCount,
     artistCount,
     songCount,
     playlistCount,
+    pendingReportCount,
+    pendingSongRequestCount,
+    communityStatistics,
     westernPopCount,
     chinesePopCount,
     cantonesePopCount,
@@ -223,6 +257,7 @@ export default () => {
     countGermany,
     countBritain,
     maleCount,
-    femaleCount
+    femaleCount,
+    refreshDashboard: fetchData
   };
 };

@@ -420,15 +420,20 @@ onMounted(() => {
             <el-tag v-if="row.isHot === 1" type="danger" size="small"
               >热门</el-tag
             >
-            <span v-else></span>
+            <span v-else />
           </template>
         </el-table-column>
-        <el-table-column prop="isHighlight" label="高亮" width="70" align="center">
+        <el-table-column
+          prop="isHighlight"
+          label="高亮"
+          width="70"
+          align="center"
+        >
           <template #default="{ row }">
             <el-tag v-if="row.isHighlight === true" type="success" size="small"
               >高亮</el-tag
             >
-            <span v-else></span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column

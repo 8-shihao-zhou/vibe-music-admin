@@ -4,7 +4,7 @@ import { message } from "@/utils/message";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { getFeedbackList, deleteFeedback, deleteFeedbacks } from "@/api/system";
-import { ElForm, ElMessageBox } from "element-plus";
+import { type ElForm, ElMessageBox } from "element-plus";
 import { type Ref, ref, toRaw, reactive, onMounted } from "vue";
 
 export function useFeedback(tableRef: Ref) {

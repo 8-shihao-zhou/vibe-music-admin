@@ -22,13 +22,17 @@ const loadHistory = async () => {
   try {
     loading.value = true;
     console.log("开始加载通知历史...");
-    
-    const response: any = await http.request("get", "/notification/admin/history", {
-      params: {
-        pageNum: pagination.pageNum,
-        pageSize: pagination.pageSize
+
+    const response: any = await http.request(
+      "get",
+      "/notification/admin/history",
+      {
+        params: {
+          pageNum: pagination.pageNum,
+          pageSize: pagination.pageSize
+        }
       }
-    });
+    );
 
     console.log("API响应:", response);
     console.log("响应码:", response.code);
@@ -92,7 +96,7 @@ const handleBatchDelete = async () => {
 
     loading.value = true;
     console.log("开始批量删除通知，数量:", selectedRows.value.length);
-    
+
     // 逐个删除选中的通知
     const deletePromises = selectedRows.value.map((row: any) => {
       console.log("删除通知 ID:", row.id);
@@ -101,12 +105,14 @@ const handleBatchDelete = async () => {
 
     const results = await Promise.all(deletePromises);
     console.log("删除结果:", results);
-    
+
     // 检查是否全部删除成功
     const allSuccess = results.every((res: any) => res.code === 0);
-    
+
     if (allSuccess) {
-      message(`成功删除 ${selectedRows.value.length} 条通知`, { type: "success" });
+      message(`成功删除 ${selectedRows.value.length} 条通知`, {
+        type: "success"
+      });
       selectedRows.value = [];
       loadHistory();
     } else {
@@ -126,20 +132,16 @@ const handleBatchDelete = async () => {
 // 删除通知（保留单个删除方法，以防需要）
 const handleDelete = async (row: any) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除通知【${row.title}】吗？`,
-      "提示",
-      {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-        customClass: "notification-delete-confirm"
-      }
-    );
+    await ElMessageBox.confirm(`确定要删除通知【${row.title}】吗？`, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+      customClass: "notification-delete-confirm"
+    });
 
     loading.value = true;
     console.log("删除通知 ID:", row.id);
-    
+
     const response: any = await http.request(
       "delete",
       `/notification/admin/delete/${row.id}`
@@ -196,9 +198,9 @@ onMounted(() => {
       </template>
 
       <!-- 通知列表表格 -->
-      <el-table 
-        v-loading="loading" 
-        :data="dataList" 
+      <el-table
+        v-loading="loading"
+        :data="dataList"
         style="width: 100%"
         table-layout="fixed"
         @selection-change="handleSelectionChange"
@@ -226,7 +228,12 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column prop="readTime" label="阅读时间" width="180" show-overflow-tooltip>
+        <el-table-column
+          prop="readTime"
+          label="阅读时间"
+          width="180"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             {{ row.readTime || "-" }}
           </template>

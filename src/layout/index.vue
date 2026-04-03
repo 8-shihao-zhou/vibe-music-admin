@@ -100,23 +100,17 @@ useResizeObserver(appWrapperRef, entries => {
   if (width > 0 && width <= 760) {
     toggle("mobile", false);
     isAutoCloseSidebar = true;
-  } else if (width > 760 && width <= 990) {
-    if (isAutoCloseSidebar) {
-      toggle("desktop", false);
-      isAutoCloseSidebar = false;
-    }
-  } else if (width > 990 && !set.sidebar.isClickCollapse) {
+  } else if (width > 760) {
     toggle("desktop", true);
     isAutoCloseSidebar = true;
-  } else {
-    toggle("desktop", false);
-    isAutoCloseSidebar = false;
   }
 });
 
 onMounted(() => {
   if (isMobile) {
     toggle("mobile", false);
+  } else {
+    toggle("desktop", true);
   }
 });
 
@@ -157,7 +151,7 @@ const LayHeader = defineComponent({
 </script>
 
 <template>
-  <div ref="appWrapperRef" :class="['app-wrapper', set.classes]">
+  <div ref="appWrapperRef" :class="['app-wrapper', 'admin-neo', set.classes]">
     <div
       v-show="
         set.device === 'mobile' &&

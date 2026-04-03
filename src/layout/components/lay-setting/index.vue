@@ -17,8 +17,6 @@ import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import Segmented, { type OptionsType } from "@/components/ReSegmented";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { useDark, useGlobal, debounce, isNumber } from "@pureadmin/utils";
-
-import Check from "@iconify-icons/ep/check";
 import LeftArrow from "@iconify-icons/ri/arrow-left-s-line";
 import RightArrow from "@iconify-icons/ri/arrow-right-s-line";
 import DayIcon from "@/assets/svg/day.svg?component";
@@ -33,17 +31,9 @@ const mixRef = ref();
 const verticalRef = ref();
 const horizontalRef = ref();
 
-const {
-  dataTheme,
-  overallStyle,
-  layoutTheme,
-  themeColors,
-  toggleClass,
-  dataThemeChange,
-  setLayoutThemeColor
-} = useDataThemeChange();
+const { dataTheme, overallStyle, layoutTheme, toggleClass, dataThemeChange } =
+  useDataThemeChange();
 
-/* body添加layout属性，作用于src/style/sidebar.scss */
 if (unref(layoutTheme)) {
   const layout = unref(layoutTheme).layout;
   const theme = unref(layoutTheme).theme;
@@ -51,33 +41,15 @@ if (unref(layoutTheme)) {
   setLayoutModel(layout);
 }
 
-/** 默认灵动模式 */
-const markValue = ref($storage.configure?.showModel ?? "smart");
-
 const logoVal = ref($storage.configure?.showLogo ?? true);
 
 const settings = reactive({
   greyVal: $storage.configure.grey,
   weakVal: $storage.configure.weak,
   tabsVal: $storage.configure.hideTabs,
-  showLogo: $storage.configure.showLogo,
-  showModel: $storage.configure.showModel,
   hideFooter: $storage.configure.hideFooter,
   multiTagsCache: $storage.configure.multiTagsCache,
   stretch: $storage.configure.stretch
-});
-
-const getThemeColorStyle = computed(() => {
-  return color => {
-    return { background: color };
-  };
-});
-
-/** 当网页整体为暗色风格时不显示亮白色主题配色切换选项 */
-const showThemeColors = computed(() => {
-  return themeColor => {
-    return themeColor === "light" && isDark.value ? false : true;
-  };
 });
 
 function storageConfigureChange<T>(key: string, val: T): void {
@@ -86,48 +58,35 @@ function storageConfigureChange<T>(key: string, val: T): void {
   $storage.configure = storageConfigure;
 }
 
-/** 灰色模式设置 */
 const greyChange = (value): void => {
   const htmlEl = document.querySelector("html");
   toggleClass(settings.greyVal, "html-grey", htmlEl);
   storageConfigureChange("grey", value);
 };
 
-/** 色弱模式设置 */
 const weekChange = (value): void => {
   const htmlEl = document.querySelector("html");
   toggleClass(settings.weakVal, "html-weakness", htmlEl);
   storageConfigureChange("weak", value);
 };
 
-/** 隐藏标签页设置 */
 const tagsChange = () => {
   const showVal = settings.tabsVal;
   storageConfigureChange("hideTabs", showVal);
   emitter.emit("tagViewsChange", showVal as unknown as string);
 };
 
-/** 隐藏页脚设置 */
 const hideFooterChange = () => {
   const hideFooter = settings.hideFooter;
   storageConfigureChange("hideFooter", hideFooter);
 };
 
-/** 标签页持久化设置 */
 const multiTagsCacheChange = () => {
   const multiTagsCache = settings.multiTagsCache;
   storageConfigureChange("multiTagsCache", multiTagsCache);
   useMultiTagsStoreHook().multiTagsCacheChange(multiTagsCache);
 };
 
-function onChange({ option }) {
-  const { value } = option;
-  markValue.value = value;
-  storageConfigureChange("showModel", value);
-  emitter.emit("tagViewsShowModel", value);
-}
-
-/** 侧边栏Logo */
 function logoChange() {
   unref(logoVal)
     ? storageConfigureChange("showLogo", true)
@@ -135,27 +94,24 @@ function logoChange() {
   emitter.emit("logoChange", unref(logoVal));
 }
 
-function setFalse(Doms): any {
-  Doms.forEach(v => {
-    toggleClass(false, "is-select", unref(v));
+function setFalse(domRefs): void {
+  domRefs.forEach(item => {
+    toggleClass(false, "is-select", unref(item));
   });
 }
 
-/** 页宽 */
-const stretchTypeOptions = computed<Array<OptionsType>>(() => {
-  return [
-    {
-      label: "固定",
-      tip: "紧凑页面，轻松找到所需信息",
-      value: "fixed"
-    },
-    {
-      label: "自定义",
-      tip: "最小1280、最大1600",
-      value: "custom"
-    }
-  ];
-});
+const stretchTypeOptions = computed<Array<OptionsType>>(() => [
+  {
+    label: "固定",
+    tip: "使用常规页面宽度",
+    value: "fixed"
+  },
+  {
+    label: "自定义",
+    tip: "可在 1280 到 1600 之间调整",
+    value: "custom"
+  }
+]);
 
 const setStretch = value => {
   settings.stretch = value;
@@ -167,76 +123,37 @@ const stretchTypeChange = ({ option }) => {
   value === "custom" ? setStretch(1440) : setStretch(false);
 };
 
-/** 主题色 激活选择项 */
-const getThemeColor = computed(() => {
-  return current => {
-    if (
-      current === layoutTheme.value.theme &&
-      layoutTheme.value.theme !== "light"
-    ) {
-      return "#fff";
-    } else if (
-      current === layoutTheme.value.theme &&
-      layoutTheme.value.theme === "light"
-    ) {
-      return "#1d2b45";
-    } else {
-      return "transparent";
-    }
-  };
-});
+const pClass = computed(() => [
+  "mb-[12px]",
+  "font-medium",
+  "text-sm",
+  "dark:text-white"
+]);
 
-const pClass = computed(() => {
-  return ["mb-[12px]", "font-medium", "text-sm", "dark:text-white"];
-});
+const themeOptions = computed<Array<OptionsType>>(() => [
+  {
+    label: "浅色",
+    icon: DayIcon,
+    theme: "light",
+    tip: "清爽明亮，适合日常管理",
+    iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
+  },
+  {
+    label: "深色",
+    icon: DarkIcon,
+    theme: "dark",
+    tip: "沉稳柔和，适合低亮环境",
+    iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
+  },
+  {
+    label: "自动",
+    icon: SystemIcon,
+    theme: "system",
+    tip: "跟随系统主题自动切换",
+    iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
+  }
+]);
 
-const themeOptions = computed<Array<OptionsType>>(() => {
-  return [
-    {
-      label: "浅色",
-      icon: DayIcon,
-      theme: "light",
-      tip: "清新启航，点亮舒适的工作界面",
-      iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
-    },
-    {
-      label: "深色",
-      icon: DarkIcon,
-      theme: "dark",
-      tip: "月光序曲，沉醉于夜的静谧雅致",
-      iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
-    },
-    {
-      label: "自动",
-      icon: SystemIcon,
-      theme: "system",
-      tip: "同步时光，界面随晨昏自然呼应",
-      iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
-    }
-  ];
-});
-
-const markOptions = computed<Array<OptionsType>>(() => {
-  return [
-    {
-      label: "灵动",
-      tip: "灵动标签，添趣生辉",
-      value: "smart"
-    },
-    {
-      label: "卡片",
-      tip: "卡片标签，高效浏览",
-      value: "card"
-    },
-    {
-      label: "谷歌",
-      tip: "谷歌风格，经典美观",
-      value: "chrome"
-    }
-  ];
-});
-
-/** 设置导航模式 */
 function setLayoutModel(layout: string) {
   layoutTheme.value.layout = layout;
   window.document.body.setAttribute("layout", layout);
@@ -274,14 +191,9 @@ watch($storage, ({ layout }) => {
 
 const mediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
 
-/** 根据操作系统主题设置平台整体风格 */
 function updateTheme() {
   if (overallStyle.value !== "system") return;
-  if (mediaQueryList.matches) {
-    dataTheme.value = true;
-  } else {
-    dataTheme.value = false;
-  }
+  dataTheme.value = mediaQueryList.matches;
   dataThemeChange(overallStyle.value);
 }
 
@@ -289,7 +201,6 @@ function removeMatchMedia() {
   mediaQueryList.removeEventListener("change", updateTheme);
 }
 
-/** 监听操作系统主题改变 */
 function watchSystemThemeChange() {
   updateTheme();
   removeMatchMedia();
@@ -297,7 +208,6 @@ function watchSystemThemeChange() {
 }
 
 onBeforeMount(() => {
-  /* 初始化系统配置 */
   nextTick(() => {
     watchSystemThemeChange();
     settings.greyVal &&
@@ -309,7 +219,7 @@ onBeforeMount(() => {
   });
 });
 
-onUnmounted(() => removeMatchMedia);
+onUnmounted(() => removeMatchMedia());
 </script>
 
 <template>
@@ -323,9 +233,7 @@ onUnmounted(() => removeMatchMedia);
         :options="themeOptions"
         @change="
           theme => {
-            theme.index === 1 && theme.index !== 2
-              ? (dataTheme = true)
-              : (dataTheme = false);
+            dataTheme = theme.index === 1;
             overallStyle = theme.option.theme;
             dataThemeChange(theme.option.theme);
             theme.index === 2 && watchSystemThemeChange();
@@ -333,33 +241,11 @@ onUnmounted(() => removeMatchMedia);
         "
       />
 
-      <p :class="['mt-5', pClass]">主题色</p>
-      <ul class="theme-color">
-        <li
-          v-for="(item, index) in themeColors"
-          v-show="showThemeColors(item.themeColor)"
-          :key="index"
-          :style="getThemeColorStyle(item.color)"
-          @click="setLayoutThemeColor(item.themeColor)"
-        >
-          <el-icon
-            style="margin: 0.1em 0.1em 0 0"
-            :size="17"
-            :color="getThemeColor(item.themeColor)"
-          >
-            <IconifyIconOffline :icon="Check" />
-          </el-icon>
-        </li>
-      </ul>
-
       <p :class="['mt-5', pClass]">导航模式</p>
       <ul class="pure-theme">
         <li
           ref="verticalRef"
-          v-tippy="{
-            content: '左侧菜单，亲切熟悉',
-            zIndex: 41000
-          }"
+          v-tippy="{ content: '左侧菜单布局', zIndex: 41000 }"
           :class="layoutTheme.layout === 'vertical' ? 'is-select' : ''"
           @click="setLayoutModel('vertical')"
         >
@@ -369,10 +255,7 @@ onUnmounted(() => removeMatchMedia);
         <li
           v-if="device !== 'mobile'"
           ref="horizontalRef"
-          v-tippy="{
-            content: '顶部菜单，简洁概览',
-            zIndex: 41000
-          }"
+          v-tippy="{ content: '顶部菜单布局', zIndex: 41000 }"
           :class="layoutTheme.layout === 'horizontal' ? 'is-select' : ''"
           @click="setLayoutModel('horizontal')"
         >
@@ -382,10 +265,7 @@ onUnmounted(() => removeMatchMedia);
         <li
           v-if="device !== 'mobile'"
           ref="mixRef"
-          v-tippy="{
-            content: '混合菜单，灵活多变',
-            zIndex: 41000
-          }"
+          v-tippy="{ content: '混合菜单布局', zIndex: 41000 }"
           :class="layoutTheme.layout === 'mix' ? 'is-select' : ''"
           @click="setLayoutModel('mix')"
         >
@@ -395,7 +275,7 @@ onUnmounted(() => removeMatchMedia);
       </ul>
 
       <span v-if="useAppStoreHook().getViewportWidth > 1280">
-        <p :class="['mt-5', pClass]">页宽</p>
+        <p :class="['mt-5', pClass]">页面宽度</p>
         <Segmented
           resize
           class="mb-2 select-none"
@@ -438,15 +318,6 @@ onUnmounted(() => removeMatchMedia);
         </button>
       </span>
 
-      <p :class="['mt-4', pClass]">页签风格</p>
-      <Segmented
-        resize
-        class="select-none"
-        :modelValue="markValue === 'smart' ? 0 : markValue === 'card' ? 1 : 2"
-        :options="markOptions"
-        @change="onChange"
-      />
-
       <p class="mt-5 font-medium text-sm dark:text-white">界面显示</p>
       <ul class="setting">
         <li>
@@ -470,7 +341,7 @@ onUnmounted(() => removeMatchMedia);
           />
         </li>
         <li>
-          <span class="dark:text-white">隐藏标签页</span>
+          <span class="dark:text-white">隐藏页签</span>
           <el-switch
             v-model="settings.tabsVal"
             inline-prompt
@@ -490,7 +361,7 @@ onUnmounted(() => removeMatchMedia);
           />
         </li>
         <li>
-          <span class="dark:text-white">Logo</span>
+          <span class="dark:text-white">显示 Logo</span>
           <el-switch
             v-model="logoVal"
             inline-prompt
@@ -517,6 +388,10 @@ onUnmounted(() => removeMatchMedia);
 </template>
 
 <style lang="scss" scoped>
+:deep(.right-panel .el-scrollbar__view) {
+  background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(244 248 252 / 94%));
+}
+
 :deep(.el-divider__text) {
   font-size: 16px;
   font-weight: 700;
@@ -533,35 +408,32 @@ onUnmounted(() => removeMatchMedia);
   height: 14px;
 }
 
-.theme-color {
-  height: 20px;
-
-  li {
-    float: left;
-    height: 20px;
-    margin-right: 8px;
-    cursor: pointer;
-    border-radius: 4px;
-
-    &:nth-child(1) {
-      border: 1px solid #ddd;
-    }
-  }
-}
-
 .pure-theme {
   display: flex;
   gap: 12px;
 
   li {
     position: relative;
-    width: 46px;
-    height: 36px;
+    width: 58px;
+    height: 42px;
     overflow: hidden;
     cursor: pointer;
-    background: #f0f2f5;
-    border-radius: 4px;
-    box-shadow: 0 1px 2.5px 0 rgb(0 0 0 / 18%);
+    background: linear-gradient(180deg, #f7fbff, #ecf3f9);
+    border-radius: 12px;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 88%),
+      0 8px 16px rgb(71 85 105 / 10%);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 88%),
+        0 12px 22px rgb(71 85 105 / 14%);
+    }
 
     &:nth-child(1) {
       div {
@@ -622,12 +494,216 @@ onUnmounted(() => removeMatchMedia);
 }
 
 .setting {
+  padding: 10px 0 4px;
+
   li {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 3px 0;
+    padding: 8px 0;
     font-size: 14px;
+    border-bottom: 1px solid rgb(91 141 239 / 8%);
   }
+}
+
+.p-5 {
+  border-radius: 0 0 18px 18px;
+}
+
+:deep(.el-input-number) {
+  width: 100%;
+  margin-top: 6px;
+}
+
+:deep(.el-input-number .el-input__wrapper) {
+  border-radius: 12px;
+}
+
+:deep(.dark .right-panel .el-scrollbar__view) {
+  background: linear-gradient(180deg, rgb(16 27 40 / 98%), rgb(12 20 31 / 96%));
+}
+
+:deep(.dark .setting li) {
+  border-bottom-color: rgb(116 157 214 / 10%);
+}
+
+:deep(.dark .pure-theme li) {
+  background: linear-gradient(180deg, rgb(20 31 46 / 96%), rgb(14 23 35 / 96%));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 4%),
+    0 10px 20px rgb(0 0 0 / 18%);
+}
+
+:deep(.dark .is-select) {
+  box-shadow: 0 0 0 2px rgb(115 165 255 / 12%);
+}
+
+:deep(.dark .bg-transparent.flex-c) {
+  background: rgb(15 24 36 / 88%) !important;
+  border-color: rgb(116 157 214 / 14%) !important;
+}
+
+:deep(.dark .bg-transparent.flex-c:hover) {
+  background: rgb(19 31 47 / 92%) !important;
+}
+
+:deep(.dark .project-configuration h4) {
+  color: #edf4fb;
+}
+
+:deep(.dark .project-configuration) {
+  background: linear-gradient(180deg, rgb(18 29 43 / 96%), rgb(15 24 36 / 96%));
+}
+
+:deep(.dark .right-panel > div:last-child) {
+  background: rgb(15 24 36 / 96%);
+}
+
+:deep(.el-button--danger.is-text) {
+  color: #d94f75 !important;
+  border-color: rgb(225 29 72 / 14%) !important;
+  background: linear-gradient(180deg, #fff 0%, #fff5f7 100%) !important;
+}
+
+:deep(.dark .el-button--danger.is-text) {
+  color: #f08aa3 !important;
+  background: linear-gradient(180deg, rgb(48 19 28 / 96%), rgb(35 16 22 / 96%)) !important;
+  border-color: rgb(225 29 72 / 18%) !important;
+}
+
+:deep(.el-button--danger.is-text:hover) {
+  background: linear-gradient(180deg, #fff 0%, #ffeef2 100%) !important;
+}
+
+:deep(.dark .el-button--danger.is-text:hover) {
+  background: linear-gradient(180deg, rgb(58 21 33 / 96%), rgb(43 17 25 / 96%)) !important;
+}
+
+:deep(.pure-segmented) {
+  border-radius: 14px;
+  padding: 3px;
+  background: rgb(238 244 250);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+:deep(.pure-segmented-item) {
+  min-height: 42px;
+  border-radius: 11px;
+}
+
+:deep(.pure-segmented-item-selected) {
+  box-shadow: 0 8px 16px rgb(91 141 239 / 12%);
+}
+
+:deep(.dark .pure-segmented) {
+  background: rgb(8 15 24);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+}
+
+:deep(.dark .pure-segmented-item-selected) {
+  box-shadow: 0 8px 16px rgb(0 0 0 / 20%);
+}
+
+:deep(.el-scrollbar__bar) {
+  opacity: 0.8;
+}
+
+:deep(.el-scrollbar__thumb) {
+  background: linear-gradient(180deg, rgb(106 167 255 / 60%), rgb(87 191 195 / 60%));
+  border-radius: 999px;
+}
+
+:deep(.dark .el-scrollbar__thumb) {
+  background: linear-gradient(180deg, rgb(115 165 255 / 45%), rgb(87 191 195 / 42%));
+}
+
+:deep(.el-switch.is-checked .el-switch__core) {
+  box-shadow: 0 6px 14px rgb(91 141 239 / 20%);
+}
+
+:deep(.dark .el-switch.is-checked .el-switch__core) {
+  box-shadow: 0 6px 14px rgb(87 191 195 / 18%);
+}
+
+:deep(.el-switch__inner .is-text) {
+  font-weight: 700;
+}
+
+:deep(.dark .pure-theme li div:nth-child(2)),
+:deep(.dark .pure-theme li div:nth-child(1)) {
+  box-shadow: none;
+}
+
+:deep(.dark .pure-theme li:nth-child(1) div:nth-child(1)),
+:deep(.dark .pure-theme li:nth-child(2) div:nth-child(1)),
+:deep(.dark .pure-theme li:nth-child(3) div:nth-child(1)) {
+  background: #263a52;
+}
+
+:deep(.dark .pure-theme li:nth-child(1) div:nth-child(2)),
+:deep(.dark .pure-theme li:nth-child(3) div:nth-child(2)) {
+  background: #dce8f6;
+}
+
+:deep(.right-panel .el-scrollbar__view) {
+  min-height: 100%;
+}
+
+:deep(.project-configuration),
+:deep(.right-panel > div:last-child) {
+  backdrop-filter: blur(10px);
+}
+
+:deep(.project-configuration) {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+:deep(.right-panel > div:last-child) {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(244 248 252 / 96%));
+}
+
+:deep(.dark .right-panel > div:last-child) {
+  background: linear-gradient(180deg, rgb(18 29 43 / 96%), rgb(15 24 36 / 96%));
+}
+
+:deep(.pure-segmented-item-label) {
+  font-weight: 600;
+}
+
+:deep(.el-input-number + .bg-transparent.flex-c) {
+  margin-top: 6px;
+}
+
+:deep(.el-switch) {
+  --el-switch-on-color: var(--el-color-primary);
+}
+
+:deep(.is-select) {
+  border-radius: 12px;
+}
+
+:deep(.right-panel .el-scrollbar__wrap) {
+  padding-bottom: 0;
+}
+
+:deep(.el-divider__text) {
+  letter-spacing: 0.02em;
+}
+
+:deep(.right-panel .el-button) {
+  min-height: 34px;
+}
+
+:deep(.right-panel .el-button + .el-button) {
+  margin-left: 8px;
+}
+
+:deep(.setting li:last-child) {
+  border-bottom: none;
 }
 </style>
