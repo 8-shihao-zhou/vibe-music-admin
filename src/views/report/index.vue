@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getReportList, handleReport, rejectReport } from "@/api/report";
+import {
+  getReportList,
+  handleReport,
+  rejectReport,
+  resetReportData
+} from "@/api/report";
 
 const loading = ref(false);
 const reportList = ref<any[]>([]);
@@ -106,6 +111,34 @@ const rejectReportAction = async (reportId: number) => {
   }
 };
 
+const handleResetReportData = async () => {
+  try {
+    await ElMessageBox.confirm(
+      "该操作将清空当前举报记录及相关统计信息。清空后，系统将重新开始记录举报数据。是否确认继续？",
+      "清空举报记录",
+      {
+        confirmButtonText: "确认清空",
+        cancelButtonText: "取消",
+        type: "warning"
+      }
+    );
+
+    const res = await resetReportData();
+    if (res.code === 0) {
+      ElMessage.success("举报数据已重置");
+      currentPage.value = 1;
+      fetchReportList();
+    } else {
+      ElMessage.error(res.message || "重置举报数据失败");
+    }
+  } catch (error: any) {
+    if (error !== "cancel") {
+      console.error(error);
+      ElMessage.error("操作失败");
+    }
+  }
+};
+
 const handlePageChange = (page: number) => {
   currentPage.value = page;
   fetchReportList();
@@ -120,6 +153,13 @@ onMounted(fetchReportList);
       <template #header>
         <div class="card-header">
           <span class="title">举报管理</span>
+          <el-button
+            type="danger"
+            class="reset-report-btn"
+            @click="handleResetReportData"
+          >
+            清空举报记录
+          </el-button>
         </div>
       </template>
 
@@ -268,6 +308,20 @@ onMounted(fetchReportList);
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
+}
+
+:deep(.reset-report-btn) {
+  color: #fff !important;
+  background: #e56b6f !important;
+  border-color: #e56b6f !important;
+}
+
+:deep(.reset-report-btn:hover),
+:deep(.reset-report-btn:focus),
+:deep(.reset-report-btn:active) {
+  color: #fff !important;
+  background: #d95c61 !important;
+  border-color: #d95c61 !important;
 }
 
 .handler-info {

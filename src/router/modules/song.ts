@@ -14,6 +14,15 @@ export default {
       meta: {
         title: "歌曲管理"
       }
+    },
+    {
+      path: "/song/comments",
+      name: "SongCommentManagement",
+      component: () => import("@/views/comment/manage.vue"),
+      meta: {
+        title: "歌曲评论管理",
+        commentType: 0
+      }
     }
   ]
 } satisfies RouteConfigsTable;

@@ -44,3 +44,14 @@ export const rejectReport = (reportId: number, handleResult: string) => {
     params: { handleResult }
   });
 };
+
+/** 重置举报数据 */
+export const resetReportData = () => {
+  const userData = getToken();
+  return http.request<Result>("delete", "/report/admin/reset", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: userData.accessToken
+    }
+  });
+};

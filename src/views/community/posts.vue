@@ -334,6 +334,7 @@ onMounted(() => {
         <el-button
           type="danger"
           plain
+          class="permanent-delete-btn"
           :icon="'Delete'"
           :disabled="selectedRows.length === 0"
           @click="handleBatchDelete(true)"
@@ -511,6 +512,33 @@ onMounted(() => {
   margin-bottom: 20px;
   display: flex;
   gap: 12px;
+}
+
+:deep(.permanent-delete-btn) {
+  color: #ffffff !important;
+  background: #e56b6f !important;
+  border-color: #e56b6f !important;
+}
+
+:deep(.permanent-delete-btn:hover),
+:deep(.permanent-delete-btn:focus),
+:deep(.permanent-delete-btn:active) {
+  color: #ffffff !important;
+  background: #d95c61 !important;
+  border-color: #d95c61 !important;
+}
+
+:deep(.permanent-delete-btn.is-disabled) {
+  color: #ffffff !important;
+  background: #f6a2a2 !important;
+  border-color: #f6a2a2 !important;
+  opacity: 0.88;
+}
+
+:deep(.permanent-delete-btn.is-disabled:hover) {
+  color: #ffffff !important;
+  background: #f6a2a2 !important;
+  border-color: #f6a2a2 !important;
 }
 
 .box-card {
